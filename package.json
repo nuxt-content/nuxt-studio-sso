@@ -2,6 +2,7 @@
   "name": "nuxt-studio-auth",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
     "build": "nuxt build",
     "dev": "PORT=5000 nuxt dev",
