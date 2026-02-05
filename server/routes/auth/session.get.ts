@@ -6,6 +6,6 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    user: session.user,
+    user: session.user
   }
 })

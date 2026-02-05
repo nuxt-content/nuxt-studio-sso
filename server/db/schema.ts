@@ -10,7 +10,7 @@ export const users = sqliteTable('users', {
   githubToken: text('github_token'), // Encrypted GitHub access token for git operations
   isAdmin: integer('is_admin', { mode: 'boolean' }).default(false), // Admin flag - first user is admin
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 })
 
 // OAuth Clients table - registered client applications
@@ -23,7 +23,7 @@ export const oauthClients = sqliteTable('oauth_clients', {
   previewUrlPattern: text('preview_url_pattern'), // Optional pattern for preview deployments (e.g., https://*.vercel.app)
   ownerId: text('owner_id').references(() => users.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true)
 })
 
 // Authorization codes - short-lived codes for OAuth flow
@@ -35,7 +35,7 @@ export const authorizationCodes = sqliteTable('authorization_codes', {
   scope: text('scope').notNull(),
   codeChallenge: text('code_challenge'), // PKCE
   codeChallengeMethod: text('code_challenge_method'),
-  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 })
 
 // Refresh tokens - long-lived tokens for obtaining new access tokens
@@ -46,7 +46,7 @@ export const refreshTokens = sqliteTable('refresh_tokens', {
   userId: text('user_id').notNull().references(() => users.id),
   scope: text('scope').notNull(),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-  revokedAt: integer('revoked_at', { mode: 'timestamp' }),
+  revokedAt: integer('revoked_at', { mode: 'timestamp' })
 })
 
 // Type exports

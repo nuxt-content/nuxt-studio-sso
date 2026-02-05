@@ -1,13 +1,10 @@
 import { eq, or } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
-import { generateUUID } from '../../utils/oauth'
-import { encryptToken } from '../../utils/crypto'
-import { isFirstUser } from '../../utils/admin'
 
 export default defineOAuthGitHubEventHandler({
   config: {
     // Request repo scope for Git operations
-    scope: ['user:email', 'repo'],
+    scope: ['user:email', 'repo']
   },
   async onSuccess(event, { user: githubUser, tokens }) {
     const config = useRuntimeConfig()
@@ -18,6 +15,12 @@ export default defineOAuthGitHubEventHandler({
       encryptedGithubToken = await encryptToken(tokens.access_token, config.session.password)
     }
 
+    const email = githubUser.email as string | null
+    if (!email) {
+      console.error('GitHub user has no email')
+      return sendRedirect(event, '/login?error=github_no_email')
+    }
+
     // Check if user exists by GitHub ID or email
     const existingUsers = await db
       .select()
@@ -25,8 +28,8 @@ export default defineOAuthGitHubEventHandler({
       .where(
         or(
           eq(schema.users.githubId, String(githubUser.id)),
-          eq(schema.users.email, githubUser.email),
-        ),
+          eq(schema.users.email, email)
+        )
       )
       .limit(1)
 
@@ -41,7 +44,7 @@ export default defineOAuthGitHubEventHandler({
           avatar: githubUser.avatar_url,
           githubId: String(githubUser.id),
           githubToken: encryptedGithubToken,
-          updatedAt: new Date(),
+          updatedAt: new Date()
         })
         .where(eq(schema.users.id, user.id))
 
@@ -51,24 +54,23 @@ export default defineOAuthGitHubEventHandler({
         avatar: githubUser.avatar_url,
         githubId: String(githubUser.id),
         githubToken: encryptedGithubToken,
-        updatedAt: new Date(),
+        updatedAt: new Date()
       }
-    }
-    else {
+    } else {
       // Check if this is the first user (will be made admin)
       const shouldBeAdmin = await isFirstUser()
 
       // Create new user with GitHub token
       const newUser = {
         id: generateUUID(),
-        email: githubUser.email,
+        email,
         name: githubUser.name || githubUser.login,
         avatar: githubUser.avatar_url,
         githubId: String(githubUser.id),
         githubToken: encryptedGithubToken,
         isAdmin: shouldBeAdmin,
         createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
       }
 
       await db.insert(schema.users).values(newUser)
@@ -82,13 +84,13 @@ export default defineOAuthGitHubEventHandler({
     // Set user session
     await setUserSession(event, {
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar,
-        isAdmin: user.isAdmin,
+        id: user!.id,
+        email: user!.email,
+        name: user!.name,
+        avatar: user!.avatar,
+        isAdmin: user!.isAdmin ?? false
       },
-      oauthRequest, // Preserve OAuth request if present
+      oauthRequest // Preserve OAuth request if present
     })
 
     // Redirect to consent page if there's a pending OAuth request, otherwise to dashboard
@@ -101,5 +103,5 @@ export default defineOAuthGitHubEventHandler({
   onError(event, error) {
     console.error('GitHub OAuth error:', error)
     return sendRedirect(event, '/login?error=github_auth_failed')
-  },
+  }
 })

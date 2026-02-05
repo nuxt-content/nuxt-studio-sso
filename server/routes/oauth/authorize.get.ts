@@ -1,5 +1,3 @@
-import { getOAuthClient, validateRedirectUri } from '../../utils/oauth'
-
 // Fixed scope - always return all user info + GitHub token if available
 const DEFAULT_SCOPE = 'openid profile email git:github'
 
@@ -20,7 +18,7 @@ export default defineEventHandler(async (event) => {
   if (!clientId || !redirectUri || !responseType) {
     throw createError({
       statusCode: 400,
-      message: 'Missing required parameters: client_id, redirect_uri, response_type',
+      message: 'Missing required parameters: client_id, redirect_uri, response_type'
     })
   }
 
@@ -28,7 +26,7 @@ export default defineEventHandler(async (event) => {
   if (responseType !== 'code') {
     throw createError({
       statusCode: 400,
-      message: 'Unsupported response_type. Only "code" is supported.',
+      message: 'Unsupported response_type. Only "code" is supported.'
     })
   }
 
@@ -37,7 +35,7 @@ export default defineEventHandler(async (event) => {
   if (!client) {
     throw createError({
       statusCode: 400,
-      message: 'Invalid client_id',
+      message: 'Invalid client_id'
     })
   }
 
@@ -45,7 +43,7 @@ export default defineEventHandler(async (event) => {
   if (!validateRedirectUri(redirectUri, client.websiteUrl, client.previewUrlPattern)) {
     throw createError({
       statusCode: 400,
-      message: `Invalid redirect_uri. Expected callback at ${client.websiteUrl}/__nuxt_studio/auth/sso${client.previewUrlPattern ? ` or matching pattern ${client.previewUrlPattern}` : ''}`,
+      message: `Invalid redirect_uri. Expected callback at ${client.websiteUrl}/__nuxt_studio/auth/sso${client.previewUrlPattern ? ` or matching pattern ${client.previewUrlPattern}` : ''}`
     })
   }
 
@@ -61,8 +59,8 @@ export default defineEventHandler(async (event) => {
         scope: DEFAULT_SCOPE,
         state,
         codeChallenge,
-        codeChallengeMethod,
-      },
+        codeChallengeMethod
+      }
     })
 
     return sendRedirect(event, '/login')
@@ -78,8 +76,8 @@ export default defineEventHandler(async (event) => {
       state,
       codeChallenge,
       codeChallengeMethod,
-      clientName: client.name,
-    },
+      clientName: client.name
+    }
   })
 
   return sendRedirect(event, '/authorize')

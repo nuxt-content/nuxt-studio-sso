@@ -1,19 +1,7 @@
 import { db, schema } from 'hub:db'
-import { generateUUID, generateSecureToken, hashToken, buildCallbackUrl, STUDIO_CALLBACK_PATH } from '../../../utils/oauth'
-import { requireAdmin } from '../../../utils/admin'
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
-
-  if (!session.user?.id) {
-    throw createError({
-      statusCode: 401,
-      message: 'Unauthorized',
-    })
-  }
-
-  // Only admins can create clients
-  await requireAdmin(session.user.id)
+  const session = await requireAdminUser(event)
 
   const body = await readBody(event)
   const { name, websiteUrl, previewUrlPattern } = body
@@ -22,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!name || !websiteUrl) {
     throw createError({
       statusCode: 400,
-      message: 'Name and website URL are required',
+      message: 'Name and website URL are required'
     })
   }
 
@@ -32,17 +20,16 @@ export default defineEventHandler(async (event) => {
     if (url.pathname !== '/' && url.pathname !== '') {
       throw createError({
         statusCode: 400,
-        message: 'Website URL should not include a path. The callback path will be added automatically.',
+        message: 'Website URL should not include a path. The callback path will be added automatically.'
       })
     }
-  }
-  catch (e) {
+  } catch (e) {
     if (e instanceof Error && e.message.includes('callback path')) {
       throw e
     }
     throw createError({
       statusCode: 400,
-      message: `Invalid website URL: ${websiteUrl}`,
+      message: `Invalid website URL: ${websiteUrl}`
     })
   }
 
@@ -52,7 +39,7 @@ export default defineEventHandler(async (event) => {
     if (!previewUrlPattern.startsWith('https://') && !previewUrlPattern.startsWith('http://')) {
       throw createError({
         statusCode: 400,
-        message: 'Preview URL pattern must start with https:// or http://',
+        message: 'Preview URL pattern must start with https:// or http://'
       })
     }
   }
@@ -79,9 +66,9 @@ export default defineEventHandler(async (event) => {
     websiteUrl: normalizedWebsiteUrl,
     previewUrlPattern: previewUrlPattern || null,
     redirectUris: JSON.stringify(redirectUris),
-    ownerId: session.user.id,
+    ownerId: session.user.id as string,
     createdAt: new Date(),
-    isActive: true,
+    isActive: true
   })
 
   // Return the client with the secret (only shown once)
@@ -92,6 +79,6 @@ export default defineEventHandler(async (event) => {
     websiteUrl: normalizedWebsiteUrl,
     previewUrlPattern: previewUrlPattern || null,
     callbackUrl: buildCallbackUrl(normalizedWebsiteUrl),
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
   }
 })

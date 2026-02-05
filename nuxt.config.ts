@@ -1,19 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
 
   modules: [
     '@nuxthub/core',
     'nuxt-auth-utils',
     '@nuxt/ui',
+    '@nuxt/eslint'
   ],
+  devtools: { enabled: true },
 
   css: ['~/assets/css/main.css'],
-
-  hub: {
-    db: 'sqlite',
-  },
 
   runtimeConfig: {
     // JWT keys for RS256
@@ -23,12 +19,26 @@ export default defineNuxtConfig({
     oauth: {
       github: {
         clientId: '',
-        clientSecret: '',
-      },
-    },
+        clientSecret: ''
+      }
+    }
   },
 
   future: {
-    compatibilityVersion: 4,
+    compatibilityVersion: 4
   },
+  compatibilityDate: '2025-07-15',
+
+  hub: {
+    db: 'sqlite'
+  },
+
+  eslint: {
+    config: {
+      stylistic: {
+        commaDangle: 'never',
+        braceStyle: '1tbs'
+      }
+    }
+  }
 })

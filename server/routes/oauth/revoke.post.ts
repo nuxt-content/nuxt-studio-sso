@@ -1,5 +1,3 @@
-import { revokeRefreshToken, verifyClientCredentials } from '../../utils/oauth'
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
@@ -13,8 +11,7 @@ export default defineEventHandler(async (event) => {
     const [id, secret] = credentials.split(':')
     clientId = id
     clientSecret = secret
-  }
-  else {
+  } else {
     clientId = body.client_id
     clientSecret = body.client_secret
   }
@@ -23,7 +20,7 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 401)
     return {
       error: 'invalid_client',
-      error_description: 'Client credentials required',
+      error_description: 'Client credentials required'
     }
   }
 
@@ -33,7 +30,7 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 401)
     return {
       error: 'invalid_client',
-      error_description: 'Invalid client credentials',
+      error_description: 'Invalid client credentials'
     }
   }
 
@@ -44,7 +41,7 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400)
     return {
       error: 'invalid_request',
-      error_description: 'Missing token parameter',
+      error_description: 'Missing token parameter'
     }
   }
 

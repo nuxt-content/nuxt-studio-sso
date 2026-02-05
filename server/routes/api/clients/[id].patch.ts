@@ -1,26 +1,14 @@
 import { eq, and } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
-import { buildCallbackUrl, STUDIO_CALLBACK_PATH } from '../../../utils/oauth'
-import { requireAdmin } from '../../../utils/admin'
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
-
-  if (!session.user?.id) {
-    throw createError({
-      statusCode: 401,
-      message: 'Unauthorized',
-    })
-  }
-
-  // Only admins can update clients
-  await requireAdmin(session.user.id)
+  const session = await requireAdminUser(event)
 
   const clientId = getRouterParam(event, 'id')
   if (!clientId) {
     throw createError({
       statusCode: 400,
-      message: 'Client ID is required',
+      message: 'Client ID is required'
     })
   }
 
@@ -34,15 +22,15 @@ export default defineEventHandler(async (event) => {
     .where(
       and(
         eq(schema.oauthClients.id, clientId),
-        eq(schema.oauthClients.ownerId, session.user.id),
-      ),
+        eq(schema.oauthClients.ownerId, session.user.id as string)
+      )
     )
     .limit(1)
 
   if (!existingClients[0]) {
     throw createError({
       statusCode: 404,
-      message: 'Client not found',
+      message: 'Client not found'
     })
   }
 
@@ -60,17 +48,16 @@ export default defineEventHandler(async (event) => {
       if (url.pathname !== '/' && url.pathname !== '') {
         throw createError({
           statusCode: 400,
-          message: 'Website URL should not include a path. The callback path will be added automatically.',
+          message: 'Website URL should not include a path. The callback path will be added automatically.'
         })
       }
-    }
-    catch (e) {
+    } catch (e) {
       if (e instanceof Error && e.message.includes('callback path')) {
         throw e
       }
       throw createError({
         statusCode: 400,
-        message: `Invalid website URL: ${websiteUrl}`,
+        message: `Invalid website URL: ${websiteUrl}`
       })
     }
     updates.websiteUrl = websiteUrl.replace(/\/$/, '')
@@ -80,7 +67,7 @@ export default defineEventHandler(async (event) => {
     if (previewUrlPattern && !previewUrlPattern.startsWith('https://') && !previewUrlPattern.startsWith('http://')) {
       throw createError({
         statusCode: 400,
-        message: 'Preview URL pattern must start with https:// or http://',
+        message: 'Preview URL pattern must start with https:// or http://'
       })
     }
     updates.previewUrlPattern = previewUrlPattern || null
@@ -107,7 +94,7 @@ export default defineEventHandler(async (event) => {
   if (Object.keys(updates).length === 0) {
     throw createError({
       statusCode: 400,
-      message: 'No fields to update',
+      message: 'No fields to update'
     })
   }
 
@@ -124,16 +111,16 @@ export default defineEventHandler(async (event) => {
       websiteUrl: schema.oauthClients.websiteUrl,
       previewUrlPattern: schema.oauthClients.previewUrlPattern,
       isActive: schema.oauthClients.isActive,
-      createdAt: schema.oauthClients.createdAt,
+      createdAt: schema.oauthClients.createdAt
     })
     .from(schema.oauthClients)
     .where(eq(schema.oauthClients.id, clientId))
     .limit(1)
 
-  const client = updatedClients[0]
+  const client = updatedClients[0]!
 
   return {
     ...client,
-    callbackUrl: buildCallbackUrl(client.websiteUrl),
+    callbackUrl: buildCallbackUrl(client.websiteUrl)
   }
 })

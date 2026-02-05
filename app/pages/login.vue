@@ -4,16 +4,12 @@ const error = computed(() => route.query.error as string | undefined)
 
 useSeoMeta({
   title: 'Sign In - Nuxt Studio SSO',
-  description: 'Sign in to manage your OAuth clients and access connected Nuxt Studio sites.',
-})
-
-definePageMeta({
-  layout: false,
+  description: 'Sign in to manage your OAuth clients and access connected Nuxt Studio sites.'
 })
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 p-4">
+  <div class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <NuxtLink to="/" class="inline-flex items-center gap-2 mb-6">
@@ -27,7 +23,7 @@ definePageMeta({
         </p>
       </div>
 
-      <UCard class="shadow-xl">
+      <UCard class="shadow-xl" variant="subtle">
         <UAlert
           v-if="error"
           color="error"
@@ -43,7 +39,7 @@ definePageMeta({
           block
           size="xl"
           color="neutral"
-          variant="soft"
+          variant="solid"
           class="justify-center"
         >
           <template #leading>
@@ -51,12 +47,6 @@ definePageMeta({
           </template>
           Continue with GitHub
         </UButton>
-
-        <template #footer>
-          <p class="text-center text-sm text-gray-500 dark:text-gray-400">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </p>
-        </template>
       </UCard>
 
       <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">

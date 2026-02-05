@@ -1,14 +1,12 @@
-import { createAuthorizationCode } from '../../utils/oauth'
-
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event)
 
   // Get OAuth request from session
-  const oauthRequest = session.oauthRequest
+  const oauthRequest = (session as { oauthRequest?: { clientId: string, redirectUri: string, scope: string, state?: string, codeChallenge?: string, codeChallengeMethod?: string } }).oauthRequest
   if (!oauthRequest) {
     throw createError({
       statusCode: 400,
-      message: 'No OAuth request in session',
+      message: 'No OAuth request in session'
     })
   }
 
@@ -17,8 +15,8 @@ export default defineEventHandler(async (event) => {
 
   // Clear OAuth request from session
   await setUserSession(event, {
-    ...session,
-    oauthRequest: undefined,
+    user: session.user,
+    oauthRequest: undefined
   })
 
   // Build redirect URL
@@ -38,11 +36,11 @@ export default defineEventHandler(async (event) => {
   // Generate authorization code
   const code = await createAuthorizationCode(
     oauthRequest.clientId,
-    session.user.id,
+    session.user.id as string,
     oauthRequest.redirectUri,
     oauthRequest.scope,
     oauthRequest.codeChallenge,
-    oauthRequest.codeChallengeMethod,
+    oauthRequest.codeChallengeMethod
   )
 
   // Add code and state to redirect URL

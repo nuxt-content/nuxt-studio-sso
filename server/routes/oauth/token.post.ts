@@ -1,12 +1,3 @@
-import {
-  exchangeAuthorizationCode,
-  exchangeRefreshToken,
-  createRefreshToken,
-  verifyClientCredentials,
-  getOAuthClient,
-} from '../../utils/oauth'
-import { generateAccessToken, generateIdToken } from '../../utils/jwt'
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const config = useRuntimeConfig()
@@ -21,8 +12,7 @@ export default defineEventHandler(async (event) => {
     const [id, secret] = credentials.split(':')
     clientId = id
     clientSecret = secret
-  }
-  else {
+  } else {
     clientId = body.client_id
     clientSecret = body.client_secret
   }
@@ -31,7 +21,7 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 401)
     return {
       error: 'invalid_client',
-      error_description: 'Client credentials required',
+      error_description: 'Client credentials required'
     }
   }
 
@@ -41,7 +31,7 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 401)
     return {
       error: 'invalid_client',
-      error_description: 'Invalid client credentials',
+      error_description: 'Invalid client credentials'
     }
   }
 
@@ -57,7 +47,7 @@ export default defineEventHandler(async (event) => {
       setResponseStatus(event, 400)
       return {
         error: 'invalid_request',
-        error_description: 'Missing code or redirect_uri',
+        error_description: 'Missing code or redirect_uri'
       }
     }
 
@@ -67,7 +57,7 @@ export default defineEventHandler(async (event) => {
       setResponseStatus(event, 400)
       return {
         error: 'invalid_grant',
-        error_description: 'Invalid or expired authorization code',
+        error_description: 'Invalid or expired authorization code'
       }
     }
 
@@ -80,7 +70,7 @@ export default defineEventHandler(async (event) => {
       scope,
       baseUrl,
       config.jwtPrivateKey,
-      3600, // 1 hour
+      3600 // 1 hour
     )
 
     const refreshToken = await createRefreshToken(clientId, user.id, scope)
@@ -90,7 +80,7 @@ export default defineEventHandler(async (event) => {
       token_type: 'Bearer',
       expires_in: 3600,
       refresh_token: refreshToken,
-      scope,
+      scope
     }
 
     // Include ID token if openid scope was requested
@@ -101,20 +91,19 @@ export default defineEventHandler(async (event) => {
         baseUrl,
         config.jwtPrivateKey,
         undefined,
-        3600,
+        3600
       )
     }
 
     return response
-  }
-  else if (grantType === 'refresh_token') {
+  } else if (grantType === 'refresh_token') {
     const refreshTokenValue = body.refresh_token
 
     if (!refreshTokenValue) {
       setResponseStatus(event, 400)
       return {
         error: 'invalid_request',
-        error_description: 'Missing refresh_token',
+        error_description: 'Missing refresh_token'
       }
     }
 
@@ -124,7 +113,7 @@ export default defineEventHandler(async (event) => {
       setResponseStatus(event, 400)
       return {
         error: 'invalid_grant',
-        error_description: 'Invalid or expired refresh token',
+        error_description: 'Invalid or expired refresh token'
       }
     }
 
@@ -137,14 +126,14 @@ export default defineEventHandler(async (event) => {
       scope,
       baseUrl,
       config.jwtPrivateKey,
-      3600,
+      3600
     )
 
     const response: Record<string, unknown> = {
       access_token: accessToken,
       token_type: 'Bearer',
       expires_in: 3600,
-      scope,
+      scope
     }
 
     // Include ID token if openid scope was requested
@@ -155,17 +144,16 @@ export default defineEventHandler(async (event) => {
         baseUrl,
         config.jwtPrivateKey,
         undefined,
-        3600,
+        3600
       )
     }
 
     return response
-  }
-  else {
+  } else {
     setResponseStatus(event, 400)
     return {
       error: 'unsupported_grant_type',
-      error_description: 'Only authorization_code and refresh_token grant types are supported',
+      error_description: 'Only authorization_code and refresh_token grant types are supported'
     }
   }
 })

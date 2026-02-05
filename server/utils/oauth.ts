@@ -1,6 +1,6 @@
 import { eq, and, isNull } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
-import type { OAuthClient, User } from '../db/schema'
+import type { OAuthClient, User } from 'hub:db:schema'
 
 // Generate a secure random string
 export function generateSecureToken(length: number = 32): string {
@@ -48,7 +48,7 @@ export async function generateCodeChallenge(verifier: string, method: 'S256' | '
   // Base64url encode
   let binary = ''
   for (let i = 0; i < hashArray.length; i++) {
-    binary += String.fromCharCode(hashArray[i])
+    binary += String.fromCharCode(hashArray[i]!)
   }
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
@@ -57,7 +57,7 @@ export async function generateCodeChallenge(verifier: string, method: 'S256' | '
 export async function verifyCodeChallenge(
   verifier: string,
   challenge: string,
-  method: 'S256' | 'plain' = 'S256',
+  method: 'S256' | 'plain' = 'S256'
 ): Promise<boolean> {
   const computed = await generateCodeChallenge(verifier, method)
   return computed === challenge
@@ -75,7 +75,7 @@ export const STUDIO_CALLBACK_PATH = '/__nuxt_studio/auth/sso'
 export function validateRedirectUri(
   redirectUri: string,
   websiteUrl: string,
-  previewUrlPattern?: string | null,
+  previewUrlPattern?: string | null
 ): boolean {
   // Normalize URLs (remove trailing slashes)
   const normalizedWebsiteUrl = websiteUrl.replace(/\/$/, '')
@@ -100,8 +100,7 @@ export function validateRedirectUri(
       if (regex.test(redirectUri)) {
         return true
       }
-    }
-    catch {
+    } catch {
       console.error('Invalid preview URL pattern:', previewUrlPattern)
     }
   }
@@ -131,7 +130,7 @@ export async function getOAuthClient(clientId: string): Promise<OAuthClient | nu
 // Verify client credentials
 export async function verifyClientCredentials(
   clientId: string,
-  clientSecret: string,
+  clientSecret: string
 ): Promise<OAuthClient | null> {
   const client = await getOAuthClient(clientId)
   if (!client) return null
@@ -147,7 +146,7 @@ export async function createAuthorizationCode(
   redirectUri: string,
   scope: string,
   codeChallenge?: string,
-  codeChallengeMethod?: string,
+  codeChallengeMethod?: string
 ): Promise<string> {
   const code = generateSecureToken(32)
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
@@ -160,7 +159,7 @@ export async function createAuthorizationCode(
     scope,
     codeChallenge,
     codeChallengeMethod,
-    expiresAt,
+    expiresAt
   })
 
   return code
@@ -171,7 +170,7 @@ export async function exchangeAuthorizationCode(
   code: string,
   clientId: string,
   redirectUri: string,
-  codeVerifier?: string,
+  codeVerifier?: string
 ): Promise<{ user: User, scope: string } | null> {
   // Get and validate the authorization code
   const codes = await db
@@ -223,7 +222,7 @@ export async function createRefreshToken(
   clientId: string,
   userId: string,
   scope: string,
-  expiresInDays: number = 30,
+  expiresInDays: number = 30
 ): Promise<string> {
   const token = generateSecureToken(64)
   const tokenHash = await hashToken(token)
@@ -235,7 +234,7 @@ export async function createRefreshToken(
     clientId,
     userId,
     scope,
-    expiresAt,
+    expiresAt
   })
 
   return token
@@ -244,7 +243,7 @@ export async function createRefreshToken(
 // Exchange refresh token for user
 export async function exchangeRefreshToken(
   token: string,
-  clientId: string,
+  clientId: string
 ): Promise<{ user: User, scope: string, tokenId: string } | null> {
   const tokenHash = await hashToken(token)
 
@@ -256,8 +255,8 @@ export async function exchangeRefreshToken(
       and(
         eq(schema.refreshTokens.tokenHash, tokenHash),
         eq(schema.refreshTokens.clientId, clientId),
-        isNull(schema.refreshTokens.revokedAt),
-      ),
+        isNull(schema.refreshTokens.revokedAt)
+      )
     )
     .limit(1)
 
@@ -304,11 +303,10 @@ export async function revokeAllUserTokens(userId: string, clientId?: string): Pr
         and(
           eq(schema.refreshTokens.userId, userId),
           eq(schema.refreshTokens.clientId, clientId),
-          isNull(schema.refreshTokens.revokedAt),
-        ),
+          isNull(schema.refreshTokens.revokedAt)
+        )
       )
-  }
-  else {
+  } else {
     await db
       .update(schema.refreshTokens)
       .set({ revokedAt: new Date() })

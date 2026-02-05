@@ -16,7 +16,7 @@ async function deriveKey(password: string): Promise<CryptoKey> {
     encoder.encode(password),
     'PBKDF2',
     false,
-    ['deriveKey'],
+    ['deriveKey']
   )
 
   return crypto.subtle.deriveKey(
@@ -24,12 +24,12 @@ async function deriveKey(password: string): Promise<CryptoKey> {
       name: 'PBKDF2',
       salt: encoder.encode('nuxt-studio-auth-token-encryption'),
       iterations: 100000,
-      hash: 'SHA-256',
+      hash: 'SHA-256'
     },
     keyMaterial,
     { name: ALGORITHM, length: 256 },
     false,
-    ['encrypt', 'decrypt'],
+    ['encrypt', 'decrypt']
   )
 }
 
@@ -44,7 +44,7 @@ export async function encryptToken(token: string, password: string): Promise<str
   const encrypted = await crypto.subtle.encrypt(
     { name: ALGORITHM, iv },
     key,
-    encoder.encode(token),
+    encoder.encode(token)
   )
 
   // Combine IV and encrypted data, encode as base64
@@ -70,12 +70,11 @@ export async function decryptToken(encryptedToken: string, password: string): Pr
     const decrypted = await crypto.subtle.decrypt(
       { name: ALGORITHM, iv },
       key,
-      encrypted,
+      encrypted
     )
 
     return new TextDecoder().decode(decrypted)
-  }
-  catch {
+  } catch {
     console.error('Failed to decrypt token')
     return null
   }

@@ -1,5 +1,3 @@
-import { verifyJWT } from '../../utils/jwt'
-import { decryptToken } from '../../utils/crypto'
 import { eq } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
@@ -13,7 +11,7 @@ export default defineEventHandler(async (event) => {
     setResponseHeader(event, 'WWW-Authenticate', 'Bearer')
     return {
       error: 'invalid_token',
-      error_description: 'Missing or invalid access token',
+      error_description: 'Missing or invalid access token'
     }
   }
 
@@ -26,7 +24,7 @@ export default defineEventHandler(async (event) => {
     setResponseHeader(event, 'WWW-Authenticate', 'Bearer error="invalid_token"')
     return {
       error: 'invalid_token',
-      error_description: 'Token is invalid or expired',
+      error_description: 'Token is invalid or expired'
     }
   }
 
@@ -42,7 +40,7 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 401)
     return {
       error: 'invalid_token',
-      error_description: 'User not found',
+      error_description: 'User not found'
     }
   }
 
@@ -51,7 +49,7 @@ export default defineEventHandler(async (event) => {
     sub: user.id,
     name: user.name,
     email: user.email,
-    picture: user.avatar,
+    picture: user.avatar
   }
 
   // Include GitHub token if user has one (logged in with GitHub)

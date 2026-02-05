@@ -7,11 +7,14 @@
     "dev": "PORT=5000 nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
     "postinstall": "nuxt prepare",
     "db:generate": "nuxt db generate",
     "db:migrate": "nuxt db migrate"
   },
   "dependencies": {
+    "@iconify-json/lucide": "^1.2.88",
     "@libsql/client": "^0.17.0",
     "@nuxt/ui": "^4.4.0",
     "@nuxthub/core": "^0.10.6",
@@ -23,7 +26,10 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.13.0",
+    "@types/node": "^25.2.1",
     "drizzle-kit": "^0.31.8",
+    "eslint": "^9.39.2",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.2.4"
   }

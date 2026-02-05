@@ -6,12 +6,11 @@ const oauthRequest = computed(() => session.value?.oauthRequest)
 
 useSeoMeta({
   title: 'Authorize - Nuxt Studio SSO',
-  description: 'Authorize an application to access your account.',
+  description: 'Authorize an application to access your account.'
 })
 
 definePageMeta({
-  middleware: 'auth',
-  layout: false,
+  middleware: 'auth'
 })
 
 async function handleAuthorize(approved: boolean) {
@@ -20,15 +19,14 @@ async function handleAuthorize(approved: boolean) {
   try {
     const response = await $fetch<{ redirectUrl: string }>('/oauth/authorize', {
       method: 'POST',
-      body: { approved },
+      body: { approved }
     })
 
     // Navigate to the redirect URL (back to the client application)
     if (response.redirectUrl) {
       window.location.href = response.redirectUrl
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Authorization error:', error)
     pending.value = false
   }
@@ -67,15 +65,13 @@ if (!oauthRequest.value) {
 
           <!-- User card -->
           <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-            <UAvatar :src="user?.avatar" :alt="user?.name" size="lg" />
-            <div class="min-w-0 flex-1">
-              <p class="font-medium text-gray-900 dark:text-white truncate">
-                {{ user?.name }}
-              </p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
-                {{ user?.email }}
-              </p>
-            </div>
+            <UUser
+              :name="user?.name"
+              :description="user?.email"
+              :avatar="{ src: user?.avatar ?? undefined, alt: user?.name }"
+              size="lg"
+              class="flex-1 min-w-0"
+            />
             <UIcon name="i-heroicons-check-badge" class="size-6 text-green-500 shrink-0" />
           </div>
 

@@ -1,5 +1,6 @@
-import { count } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
+import type { H3Event } from 'h3'
 
 /**
  * Check if there are any users in the database
@@ -10,7 +11,7 @@ export async function isFirstUser(): Promise<boolean> {
     .select({ count: count() })
     .from(schema.users)
 
-  return result[0].count === 0
+  return result[0]!.count === 0
 }
 
 /**
@@ -26,17 +27,21 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
   return users[0]?.isAdmin === true
 }
 
-import { eq } from 'drizzle-orm'
-
 /**
- * Require admin access - throws 403 if user is not admin
+ * Require an authenticated admin user.
+ * Calls requireUserSession(event), then checks admin status.
+ * Throws 401 if not logged in, 403 if not admin.
+ * Returns the user session.
  */
-export async function requireAdmin(userId: string): Promise<void> {
+export async function requireAdminUser(event: H3Event) {
+  const session = await requireUserSession(event)
+  const userId = session.user.id as string
   const isAdmin = await isUserAdmin(userId)
   if (!isAdmin) {
     throw createError({
       statusCode: 403,
-      message: 'Admin access required',
+      message: 'Admin access required'
     })
   }
+  return session
 }

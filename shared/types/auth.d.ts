@@ -4,6 +4,7 @@ declare module '#auth-utils' {
     email: string
     name: string
     avatar?: string | null
+    isAdmin?: boolean
   }
 
   interface UserSession {
