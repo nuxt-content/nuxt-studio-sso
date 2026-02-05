@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   if (!validateRedirectUri(redirectUri, client.websiteUrl, client.previewUrlPattern)) {
     throw createError({
       statusCode: 400,
-      message: `Invalid redirect_uri. Expected callback at ${client.websiteUrl}/__nuxt_studio/auth/oauth${client.previewUrlPattern ? ` or matching pattern ${client.previewUrlPattern}` : ''}`,
+      message: `Invalid redirect_uri. Expected callback at ${client.websiteUrl}/__nuxt_studio/auth/sso${client.previewUrlPattern ? ` or matching pattern ${client.previewUrlPattern}` : ''}`,
     })
   }
 

@@ -64,7 +64,7 @@ export async function verifyCodeChallenge(
 }
 
 // The standard Nuxt Studio callback path
-export const STUDIO_CALLBACK_PATH = '/__nuxt_studio/auth/oauth'
+export const STUDIO_CALLBACK_PATH = '/__nuxt_studio/auth/sso'
 
 /**
  * Validate redirect URI against website URL and optional preview pattern

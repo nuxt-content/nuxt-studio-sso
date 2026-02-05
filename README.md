@@ -122,7 +122,7 @@ Visit `http://localhost:3000` and log in with GitHub. **The first user to sign u
 5. Click **Create Client**
 6. **Important**: Copy the client secret immediately - it's only shown once!
 
-The callback URL (`/__nuxt_studio/auth/oauth`) is automatically appended to your website URL.
+The callback URL (`/__nuxt_studio/auth/sso`) is automatically appended to your website URL.
 
 ### Preview URL Patterns
 
@@ -142,15 +142,12 @@ The Nuxt Studio module has built-in support for the SSO server. Set these enviro
 
 ```bash
 # SSO server credentials (from admin dashboard)
-STUDIO_OAUTH_SERVER_URL=https://auth.example.com
-STUDIO_OAUTH_CLIENT_ID=<client_id from dashboard>
-STUDIO_OAUTH_CLIENT_SECRET=<client_secret from dashboard>
-
-# Optional: restrict access to specific emails
-STUDIO_OAUTH_MODERATORS=user1@example.com,user2@example.com
+STUDIO_SSO_URL=https://auth.example.com
+STUDIO_SSO_CLIENT_ID=<client_id from dashboard>
+STUDIO_SSO_CLIENT_SECRET=<client_secret from dashboard>
 ```
 
-Users can then log in via the `/__nuxt_studio/auth/oauth` route.
+Users can then log in via the `/__nuxt_studio/auth/sso` route.
 
 ### GitHub Token Pass-Through
 
@@ -195,7 +192,7 @@ When users log in to the SSO server with GitHub, their GitHub access token is se
 7. User approves → authorization code generated
                     │
                     ▼
-8. Redirect to docs.example.com/__nuxt_studio/auth/oauth?code=xxx
+8. Redirect to docs.example.com/__nuxt_studio/auth/sso?code=xxx
                     │
                     ▼
 9. Site A exchanges code for tokens → sets Studio session
@@ -222,7 +219,7 @@ When users log in to the SSO server with GitHub, their GitHub access token is se
 5. User approves → authorization code generated
                     │
                     ▼
-6. Redirect to blog.example.com/__nuxt_studio/auth/oauth?code=xxx
+6. Redirect to blog.example.com/__nuxt_studio/auth/sso?code=xxx
                     │
                     ▼
 7. Site B exchanges code for tokens → sets Studio session

@@ -1,5 +1,5 @@
 import { db, schema } from 'hub:db'
-import { generateUUID, generateSecureToken, hashToken, buildCallbackUrl } from '../../../utils/oauth'
+import { generateUUID, generateSecureToken, hashToken, buildCallbackUrl, STUDIO_CALLBACK_PATH } from '../../../utils/oauth'
 import { requireAdmin } from '../../../utils/admin'
 
 export default defineEventHandler(async (event) => {
@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
   // Build redirect URIs array (for backwards compatibility with DB schema)
   const callbackUrl = buildCallbackUrl(normalizedWebsiteUrl)
   const redirectUris = previewUrlPattern
-    ? [callbackUrl, `${previewUrlPattern.replace(/\/$/, '')}/__nuxt_studio/auth/oauth`]
+    ? [callbackUrl, `${previewUrlPattern.replace(/\/$/, '')}${STUDIO_CALLBACK_PATH}`]
     : [callbackUrl]
 
   // Create the client

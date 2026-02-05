@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
-import { buildCallbackUrl } from '../../../utils/oauth'
+import { buildCallbackUrl, STUDIO_CALLBACK_PATH } from '../../../utils/oauth'
 import { requireAdmin } from '../../../utils/admin'
 
 export default defineEventHandler(async (event) => {
@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
 
     const callbackUrl = buildCallbackUrl(finalWebsiteUrl)
     const redirectUris = finalPreviewPattern
-      ? [callbackUrl, `${finalPreviewPattern.replace(/\/$/, '')}/__nuxt_studio/auth/oauth`]
+      ? [callbackUrl, `${finalPreviewPattern.replace(/\/$/, '')}${STUDIO_CALLBACK_PATH}`]
       : [callbackUrl]
     updates.redirectUris = JSON.stringify(redirectUris)
   }
