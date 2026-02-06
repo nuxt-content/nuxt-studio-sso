@@ -1,5 +1,6 @@
 import { eq, and, isNull } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
+import { timingSafeEqual } from 'node:crypto'
 import type { OAuthClient, User } from 'hub:db:schema'
 
 // Generate a secure random string
@@ -23,10 +24,19 @@ export async function hashToken(token: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
-// Verify a token against its hash
+// Verify a token against its hash (constant-time comparison to prevent timing attacks)
 export async function verifyTokenHash(token: string, hash: string): Promise<boolean> {
   const computedHash = await hashToken(token)
-  return computedHash === hash
+  const encoder = new TextEncoder()
+  const computedBuffer = encoder.encode(computedHash)
+  const hashBuffer = encoder.encode(hash)
+
+  // Ensure buffers are the same length for timing-safe comparison
+  if (computedBuffer.length !== hashBuffer.length) {
+    return false
+  }
+
+  return timingSafeEqual(computedBuffer, hashBuffer)
 }
 
 // PKCE: Generate code verifier
@@ -60,7 +70,8 @@ export async function verifyCodeChallenge(
   method: 'S256' | 'plain' = 'S256'
 ): Promise<boolean> {
   const computed = await generateCodeChallenge(verifier, method)
-  return computed === challenge
+  const encoder = new TextEncoder()
+  return timingSafeEqual(encoder.encode(computed), encoder.encode(challenge))
 }
 
 // The standard Nuxt Studio callback path

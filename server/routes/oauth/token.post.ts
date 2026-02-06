@@ -1,4 +1,8 @@
 export default defineEventHandler(async (event) => {
+  // RFC 6749 Section 5.1: token responses must not be cached
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+  setResponseHeader(event, 'Pragma', 'no-cache')
+
   const body = await readBody(event)
   const config = useRuntimeConfig()
 
@@ -43,11 +47,11 @@ export default defineEventHandler(async (event) => {
     const redirectUri = body.redirect_uri
     const codeVerifier = body.code_verifier
 
-    if (!code || !redirectUri) {
+    if (!code || !redirectUri || !codeVerifier) {
       setResponseStatus(event, 400)
       return {
         error: 'invalid_request',
-        error_description: 'Missing code or redirect_uri'
+        error_description: 'Missing code, redirect_uri, or code_verifier. PKCE is required.',
       }
     }
 
