@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
     sub: user.id,
     name: user.name,
     email: user.email,
-    picture: user.avatar
+    picture: user.avatar,
   }
 
   // Include GitHub token if user has one (logged in with GitHub)
