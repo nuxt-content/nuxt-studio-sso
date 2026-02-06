@@ -3,8 +3,8 @@ import { db, schema } from 'hub:db'
 
 export default defineOAuthGitHubEventHandler({
   config: {
-    // Request repo scope for Git operations
-    scope: ['user:email', 'repo']
+    emailRequired: true,
+    scope: ['repo']
   },
   async onSuccess(event, { user: githubUser, tokens }) {
     const config = useRuntimeConfig()
