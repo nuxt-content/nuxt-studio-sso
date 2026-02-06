@@ -49,7 +49,7 @@ const clientCount = computed(() => clients.value?.length || 0)
     <div v-if="isAdmin" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <UCard>
         <div class="flex items-center gap-4">
-          <div class="p-3 bg-primary/10 rounded-xl">
+          <div class="p-3 inline-flex bg-primary/10 rounded-xl">
             <UIcon name="i-heroicons-key" class="size-6 text-primary" />
           </div>
           <div>
@@ -65,7 +65,7 @@ const clientCount = computed(() => clients.value?.length || 0)
 
       <UCard>
         <div class="flex items-center gap-4">
-          <div class="p-3 bg-green-500/10 rounded-xl">
+          <div class="p-3 inline-flex bg-green-500/10 rounded-xl">
             <UIcon name="i-heroicons-check-circle" class="size-6 text-green-500" />
           </div>
           <div>
@@ -81,7 +81,7 @@ const clientCount = computed(() => clients.value?.length || 0)
 
       <UCard>
         <div class="flex items-center gap-4">
-          <div class="p-3 bg-blue-500/10 rounded-xl">
+          <div class="p-3 inline-flex bg-blue-500/10 rounded-xl">
             <UIcon name="i-heroicons-globe-alt" class="size-6 text-blue-500" />
           </div>
           <div>
@@ -112,7 +112,7 @@ const clientCount = computed(() => clients.value?.length || 0)
           target="_blank"
           class="flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-primary hover:shadow-md transition-all"
         >
-          <div class="p-2 bg-primary/10 rounded-lg shrink-0">
+          <div class="p-2 inline-flex bg-primary/10 rounded-lg shrink-0">
             <UIcon name="i-heroicons-globe-alt" class="size-5 text-primary" />
           </div>
           <div class="min-w-0 flex-1">
@@ -140,7 +140,7 @@ const clientCount = computed(() => clients.value?.length || 0)
       <UCard v-if="isAdmin">
         <template #header>
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-primary/10 rounded-lg">
+            <div class="p-2 inline-flex bg-primary/10 rounded-lg">
               <UIcon name="i-heroicons-key" class="size-5 text-primary" />
             </div>
             <div>
@@ -164,7 +164,7 @@ const clientCount = computed(() => clients.value?.length || 0)
       <UCard>
         <template #header>
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-neutral-500/10 rounded-lg">
+            <div class="p-2 inline-flex bg-neutral-500/10 rounded-lg">
               <UIcon name="i-heroicons-user-circle" class="size-5 text-neutral-500" />
             </div>
             <div>

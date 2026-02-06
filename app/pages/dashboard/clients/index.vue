@@ -205,7 +205,7 @@ async function deleteClient(id: string) {
           <template #header>
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-3">
-                <div class="p-2 inline-flex bg-primary/10 rounded-lg">
+                <div class="p-2 inline-flex shrink-0 bg-primary/10 rounded-lg">
                   <UIcon name="i-heroicons-plus" class="size-5 text-primary" />
                 </div>
                 <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
