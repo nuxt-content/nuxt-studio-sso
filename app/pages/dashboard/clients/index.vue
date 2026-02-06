@@ -100,7 +100,7 @@ async function deleteClient(id: string) {
     <!-- Page header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
           OAuth Clients
         </h1>
         <p class="text-sm text-muted mt-1">
@@ -123,16 +123,16 @@ async function deleteClient(id: string) {
 
     <!-- Client list -->
     <div v-else class="grid gap-4">
-      <UCard v-for="client in clients" :key="client.id" class="hover:shadow-md transition-shadow">
+      <UCard v-for="client in clients" :key="client.id">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-2">
-              <div class="p-2 bg-primary/10 rounded-lg shrink-0">
+              <div class="p-2 bg-primary/10 rounded-lg inline-flex shrink-0">
                 <UIcon name="i-heroicons-key" class="size-5 text-primary" />
               </div>
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <h3 class="font-semibold text-gray-900 dark:text-white truncate">
+                  <h3 class="font-semibold text-neutral-900 dark:text-white truncate">
                     {{ client.name }}
                   </h3>
                   <UBadge
@@ -159,10 +159,18 @@ async function deleteClient(id: string) {
             </div>
 
             <div class="ml-11 space-y-1">
-              <p class="text-xs text-muted truncate">
-                {{ client.websiteUrl }}
-              </p>
-              <p v-if="client.previewUrlPattern" class="text-xs text-gray-400 dark:text-gray-500 truncate">
+              <UButton
+                :to="client.websiteUrl"
+                :label="client.websiteUrl"
+                target="_blank"
+                external
+                size="xs"
+                trailing-icon="i-lucide-arrow-up-right"
+                variant="link"
+                color="neutral"
+                square
+              />
+              <p v-if="client.previewUrlPattern" class="text-xs text-neutral-400 dark:text-neutral-500 truncate">
                 Preview: {{ client.previewUrlPattern }}
               </p>
             </div>
@@ -200,7 +208,7 @@ async function deleteClient(id: string) {
                 <div class="p-2 inline-flex bg-primary/10 rounded-lg">
                   <UIcon name="i-heroicons-plus" class="size-5 text-primary" />
                 </div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
                   {{ createdSecret ? 'Client Created Successfully' : 'Create New Client' }}
                 </h2>
               </div>

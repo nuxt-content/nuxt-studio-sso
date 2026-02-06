@@ -32,7 +32,7 @@ const clientCount = computed(() => clients.value?.length || 0)
   <div class="py-8">
     <!-- Welcome section -->
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
         Welcome back, {{ user?.name?.split(' ')[0] }}
       </h1>
       <p class="text-muted mt-1">
@@ -53,7 +53,7 @@ const clientCount = computed(() => clients.value?.length || 0)
             <UIcon name="i-heroicons-key" class="size-6 text-primary" />
           </div>
           <div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-2xl font-bold text-neutral-900 dark:text-white">
               {{ clientCount }}
             </p>
             <p class="text-sm text-muted">
@@ -69,7 +69,7 @@ const clientCount = computed(() => clients.value?.length || 0)
             <UIcon name="i-heroicons-check-circle" class="size-6 text-green-500" />
           </div>
           <div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-2xl font-bold text-neutral-900 dark:text-white">
               Active
             </p>
             <p class="text-sm text-muted">
@@ -85,7 +85,7 @@ const clientCount = computed(() => clients.value?.length || 0)
             <UIcon name="i-heroicons-globe-alt" class="size-6 text-blue-500" />
           </div>
           <div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-2xl font-bold text-neutral-900 dark:text-white">
               OIDC
             </p>
             <p class="text-sm text-muted">
@@ -98,7 +98,7 @@ const clientCount = computed(() => clients.value?.length || 0)
 
     <!-- Connected Websites for non-admins -->
     <div v-if="!isAdmin && websites?.length" class="mb-8">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
         Connected Websites
       </h2>
       <p class="text-muted mb-4">
@@ -110,16 +110,16 @@ const clientCount = computed(() => clients.value?.length || 0)
           :key="website.websiteUrl"
           :href="website.websiteUrl"
           target="_blank"
-          class="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-primary hover:shadow-md transition-all"
+          class="flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-primary hover:shadow-md transition-all"
         >
           <div class="p-2 bg-primary/10 rounded-lg shrink-0">
             <UIcon name="i-heroicons-globe-alt" class="size-5 text-primary" />
           </div>
           <div class="min-w-0 flex-1">
-            <p class="font-medium text-gray-900 dark:text-white truncate">{{ website.name }}</p>
+            <p class="font-medium text-neutral-900 dark:text-white truncate">{{ website.name }}</p>
             <p class="text-sm text-muted truncate">{{ website.websiteUrl }}</p>
           </div>
-          <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4 text-gray-400 shrink-0" />
+          <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4 text-neutral-400 shrink-0" />
         </a>
       </div>
     </div>
@@ -144,7 +144,7 @@ const clientCount = computed(() => clients.value?.length || 0)
               <UIcon name="i-heroicons-key" class="size-5 text-primary" />
             </div>
             <div>
-              <h3 class="font-semibold text-gray-900 dark:text-white">
+              <h3 class="font-semibold text-neutral-900 dark:text-white">
                 OAuth Clients
               </h3>
               <p class="text-sm text-muted">
@@ -164,11 +164,11 @@ const clientCount = computed(() => clients.value?.length || 0)
       <UCard>
         <template #header>
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-gray-500/10 rounded-lg">
-              <UIcon name="i-heroicons-user-circle" class="size-5 text-gray-500" />
+            <div class="p-2 bg-neutral-500/10 rounded-lg">
+              <UIcon name="i-heroicons-user-circle" class="size-5 text-neutral-500" />
             </div>
             <div>
-              <h3 class="font-semibold text-gray-900 dark:text-white">
+              <h3 class="font-semibold text-neutral-900 dark:text-white">
                 Your Account
               </h3>
               <p class="text-sm text-muted">
@@ -177,7 +177,7 @@ const clientCount = computed(() => clients.value?.length || 0)
             </div>
           </div>
         </template>
-        <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div class="flex items-center gap-4 p-4 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
           <UUser
             :name="user?.name"
             :description="user?.email"
@@ -197,7 +197,7 @@ const clientCount = computed(() => clients.value?.length || 0)
     </div>
 
     <!-- Quick links - Admin only -->
-    <div v-if="isAdmin" class="mt-8 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+    <div v-if="isAdmin" class="mt-8 p-4 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-800">
       <h3 class="text-sm font-medium text-muted mb-3">
         Quick Links
       </h3>
