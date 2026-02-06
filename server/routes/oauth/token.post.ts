@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
       setResponseStatus(event, 400)
       return {
         error: 'invalid_request',
-        error_description: 'Missing code, redirect_uri, or code_verifier. PKCE is required.',
+        error_description: 'Missing code, redirect_uri, or code_verifier. PKCE is required.'
       }
     }
 
