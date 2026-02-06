@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const responseType = query.response_type as string
   const state = query.state as string
 
-  // PKCE parameters (optional but recommended)
+  // PKCE parameters (required per OAuth 2.1)
   const codeChallenge = query.code_challenge as string | undefined
   const codeChallengeMethod = (query.code_challenge_method as string) || 'S256'
 
@@ -18,7 +18,23 @@ export default defineEventHandler(async (event) => {
   if (!clientId || !redirectUri || !responseType) {
     throw createError({
       statusCode: 400,
-      message: 'Missing required parameters: client_id, redirect_uri, response_type'
+      message: 'Missing required parameters: client_id, redirect_uri, response_type',
+    })
+  }
+
+  // Require PKCE
+  if (!codeChallenge) {
+    throw createError({
+      statusCode: 400,
+      message: 'Missing required parameter: code_challenge. PKCE is required.',
+    })
+  }
+
+  // Only allow S256 challenge method
+  if (codeChallengeMethod !== 'S256') {
+    throw createError({
+      statusCode: 400,
+      message: 'Unsupported code_challenge_method. Only "S256" is supported.',
     })
   }
 
