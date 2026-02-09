@@ -1,12 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-
   modules: [
     '@nuxthub/core',
     'nuxt-auth-utils',
     '@nuxt/ui',
     '@nuxt/eslint'
   ],
+  ssr: false,
   devtools: { enabled: true },
 
   css: ['~/assets/css/main.css'],

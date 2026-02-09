@@ -49,10 +49,13 @@ useSeoMeta({
         </UButton>
       </UCard>
 
-      <p class="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-6">
-        <NuxtLink to="/" class="hover:text-primary">
-          Back to home
-        </NuxtLink>
+      <p class="text-center text-xs text-neutral-400 dark:text-neutral-500 mt-6">
+        Powered by <NuxtLink
+          to="https://github.com/nuxt-content/nuxt-studio-sso"
+          class="underline underline-offset-2 hover:text-primary"
+          external
+          target="_blank"
+        >Nuxt Studio SSO</NuxtLink>
       </p>
     </div>
   </div>
