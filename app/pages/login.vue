@@ -4,7 +4,7 @@ const error = computed(() => route.query.error as string | undefined)
 
 useSeoMeta({
   title: 'Sign In - Nuxt Studio SSO',
-  description: 'Sign in to manage your OAuth clients and access connected Nuxt Studio sites.'
+  description: 'Sign in to access all your connected Nuxt Studio sites with a single account.'
 })
 </script>
 
@@ -16,10 +16,10 @@ useSeoMeta({
           <UIcon name="i-heroicons-shield-check" class="size-10 text-primary" />
         </NuxtLink>
         <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
-          Welcome back
+          Sign in to Nuxt Studio
         </h1>
         <p class="text-neutral-600 dark:text-neutral-400 mt-2">
-          Sign in to manage your OAuth clients
+          Access all your connected websites with a single account
         </p>
       </div>
 
