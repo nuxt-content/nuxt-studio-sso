@@ -39,17 +39,8 @@ export async function verifyTokenHash(token: string, hash: string): Promise<bool
   return timingSafeEqual(computedBuffer, hashBuffer)
 }
 
-// PKCE: Generate code verifier
-export function generateCodeVerifier(): string {
-  return generateSecureToken(32)
-}
-
-// PKCE: Generate code challenge from verifier
-export async function generateCodeChallenge(verifier: string, method: 'S256' | 'plain' = 'S256'): Promise<string> {
-  if (method === 'plain') {
-    return verifier
-  }
-
+// PKCE: Generate S256 code challenge from verifier
+async function generateCodeChallenge(verifier: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(verifier)
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
@@ -63,19 +54,29 @@ export async function generateCodeChallenge(verifier: string, method: 'S256' | '
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
-// PKCE: Verify code challenge
+// PKCE: Verify code challenge (S256 only)
 export async function verifyCodeChallenge(
   verifier: string,
-  challenge: string,
-  method: 'S256' | 'plain' = 'S256'
+  challenge: string
 ): Promise<boolean> {
-  const computed = await generateCodeChallenge(verifier, method)
+  const computed = await generateCodeChallenge(verifier)
   const encoder = new TextEncoder()
   return timingSafeEqual(encoder.encode(computed), encoder.encode(challenge))
 }
 
 // The standard Nuxt Studio callback path
 export const STUDIO_CALLBACK_PATH = '/__nuxt_studio/auth/sso'
+
+/**
+ * Validate that a URL uses HTTPS, except for localhost (development).
+ * Returns true if valid, false otherwise.
+ */
+export function requireHttps(url: string): boolean {
+  if (url.startsWith('https://')) return true
+  // Allow http://localhost:{port} for development
+  if (/^http:\/\/localhost(:\d+)?($|\/)/.test(url)) return true
+  return false
+}
 
 /**
  * Validate redirect URI against website URL and optional preview pattern
@@ -160,10 +161,11 @@ export async function createAuthorizationCode(
   codeChallengeMethod?: string
 ): Promise<string> {
   const code = generateSecureToken(32)
+  const codeHash = await hashToken(code)
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
   await db.insert(schema.authorizationCodes).values({
-    code,
+    codeHash,
     clientId,
     userId,
     redirectUri,
@@ -181,20 +183,22 @@ export async function exchangeAuthorizationCode(
   code: string,
   clientId: string,
   redirectUri: string,
-  codeVerifier?: string
+  codeVerifier: string
 ): Promise<{ user: User, scope: string } | null> {
-  // Get and validate the authorization code
+  const codeHash = await hashToken(code)
+
+  // Get and validate the authorization code by hash
   const codes = await db
     .select()
     .from(schema.authorizationCodes)
-    .where(eq(schema.authorizationCodes.code, code))
+    .where(eq(schema.authorizationCodes.codeHash, codeHash))
     .limit(1)
 
   const authCode = codes[0]
   if (!authCode) return null
 
   // Delete the code immediately (single use)
-  await db.delete(schema.authorizationCodes).where(eq(schema.authorizationCodes.code, code))
+  await db.delete(schema.authorizationCodes).where(eq(schema.authorizationCodes.codeHash, codeHash))
 
   // Validate client ID and redirect URI
   if (authCode.clientId !== clientId || authCode.redirectUri !== redirectUri) {
@@ -206,14 +210,10 @@ export async function exchangeAuthorizationCode(
     return null
   }
 
-  // Verify PKCE if present
-  if (authCode.codeChallenge) {
-    if (!codeVerifier) return null
-
-    const method = (authCode.codeChallengeMethod as 'S256' | 'plain') || 'S256'
-    const valid = await verifyCodeChallenge(codeVerifier, authCode.codeChallenge, method)
-    if (!valid) return null
-  }
+  // Verify PKCE (required)
+  if (!authCode.codeChallenge) return null
+  const valid = await verifyCodeChallenge(codeVerifier, authCode.codeChallenge)
+  if (!valid) return null
 
   // Get user
   const userResults = await db
@@ -302,32 +302,4 @@ export async function revokeRefreshToken(token: string): Promise<boolean> {
     .where(eq(schema.refreshTokens.tokenHash, tokenHash))
 
   return result.rowsAffected > 0
-}
-
-// Revoke all refresh tokens for a user/client combination
-export async function revokeAllUserTokens(userId: string, clientId?: string): Promise<void> {
-  if (clientId) {
-    await db
-      .update(schema.refreshTokens)
-      .set({ revokedAt: new Date() })
-      .where(
-        and(
-          eq(schema.refreshTokens.userId, userId),
-          eq(schema.refreshTokens.clientId, clientId),
-          isNull(schema.refreshTokens.revokedAt)
-        )
-      )
-  } else {
-    await db
-      .update(schema.refreshTokens)
-      .set({ revokedAt: new Date() })
-      .where(and(eq(schema.refreshTokens.userId, userId), isNull(schema.refreshTokens.revokedAt)))
-  }
-}
-
-// Clean up expired authorization codes
-export async function cleanupExpiredCodes(): Promise<void> {
-  const now = new Date()
-
-  await db.delete(schema.authorizationCodes).where(eq(schema.authorizationCodes.expiresAt, now))
 }

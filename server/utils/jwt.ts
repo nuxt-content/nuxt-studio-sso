@@ -83,7 +83,7 @@ async function importPublicKey(pem: string): Promise<CryptoKey> {
 }
 
 // Generate a signed JWT
-export async function generateJWT(
+async function generateJWT(
   payload: Omit<JWTPayload, 'iat'>,
   privateKeyPem: string
 ): Promise<string> {
@@ -121,7 +121,8 @@ export async function generateJWT(
 // Verify and decode a JWT
 export async function verifyJWT(
   token: string,
-  publicKeyPem: string
+  publicKeyPem: string,
+  options?: { issuer?: string, audience?: string }
 ): Promise<JWTPayload | null> {
   try {
     const parts = token.split('.')
@@ -150,6 +151,19 @@ export async function verifyJWT(
     // Check expiration
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
       return null
+    }
+
+    // Validate issuer
+    if (options?.issuer && payload.iss !== options.issuer) {
+      return null
+    }
+
+    // Validate audience
+    if (options?.audience) {
+      const audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud]
+      if (!audiences.includes(options.audience)) {
+        return null
+      }
     }
 
     return payload

@@ -4,7 +4,9 @@ import { db, schema } from 'hub:db'
 export default defineOAuthGitHubEventHandler({
   config: {
     emailRequired: true,
-    scope: ['repo']
+    scope: process.env.GITHUB_SCOPE
+      ? process.env.GITHUB_SCOPE.split(',').map(s => s.trim())
+      : ['public_repo']
   },
   async onSuccess(event, { user: githubUser, tokens }) {
     const config = useRuntimeConfig()

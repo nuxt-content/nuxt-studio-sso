@@ -15,10 +15,10 @@ export default defineEventHandler(async (event) => {
   const codeChallengeMethod = (query.code_challenge_method as string) || 'S256'
 
   // Validate required parameters
-  if (!clientId || !redirectUri || !responseType) {
+  if (!clientId || !redirectUri || !responseType || !state) {
     throw createError({
       statusCode: 400,
-      message: 'Missing required parameters: client_id, redirect_uri, response_type',
+      message: 'Missing required parameters: client_id, redirect_uri, response_type, state'
     })
   }
 
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   if (!codeChallenge) {
     throw createError({
       statusCode: 400,
-      message: 'Missing required parameter: code_challenge. PKCE is required.',
+      message: 'Missing required parameter: code_challenge. PKCE is required.'
     })
   }
 
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   if (codeChallengeMethod !== 'S256') {
     throw createError({
       statusCode: 400,
-      message: 'Unsupported code_challenge_method. Only "S256" is supported.',
+      message: 'Unsupported code_challenge_method. Only "S256" is supported.'
     })
   }
 
@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
   if (!validateRedirectUri(redirectUri, client.websiteUrl, client.previewUrlPattern)) {
     throw createError({
       statusCode: 400,
-      message: `Invalid redirect_uri. Expected callback at ${client.websiteUrl}/__nuxt_studio/auth/sso${client.previewUrlPattern ? ` or matching pattern ${client.previewUrlPattern}` : ''}`
+      message: 'Invalid redirect_uri for the specified client.'
     })
   }
 

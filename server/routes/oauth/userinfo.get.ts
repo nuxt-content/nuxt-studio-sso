@@ -16,9 +16,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const accessToken = authHeader.slice(7)
+  const baseUrl = getRequestURL(event).origin
 
-  // Verify the token
-  const payload = await verifyJWT(accessToken, config.jwtPublicKey)
+  // Verify the token (validate issuer matches this server)
+  const payload = await verifyJWT(accessToken, config.jwtPublicKey, {
+    issuer: baseUrl
+  })
   if (!payload) {
     setResponseStatus(event, 401)
     setResponseHeader(event, 'WWW-Authenticate', 'Bearer error="invalid_token"')
