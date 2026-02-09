@@ -60,14 +60,21 @@ export default defineEventHandler(async (event) => {
         message: `Invalid website URL: ${websiteUrl}`
       })
     }
+    // Require HTTPS (allow http://localhost for development)
+    if (!requireHttps(websiteUrl)) {
+      throw createError({
+        statusCode: 400,
+        message: 'Website URL must use HTTPS. Only http://localhost is allowed for development.'
+      })
+    }
     updates.websiteUrl = websiteUrl.replace(/\/$/, '')
   }
 
   if (previewUrlPattern !== undefined) {
-    if (previewUrlPattern && !previewUrlPattern.startsWith('https://') && !previewUrlPattern.startsWith('http://')) {
+    if (previewUrlPattern && !requireHttps(previewUrlPattern)) {
       throw createError({
         statusCode: 400,
-        message: 'Preview URL pattern must start with https:// or http://'
+        message: 'Preview URL pattern must use HTTPS. Only http://localhost is allowed for development.'
       })
     }
     updates.previewUrlPattern = previewUrlPattern || null

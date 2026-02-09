@@ -28,7 +28,7 @@ export const oauthClients = sqliteTable('oauth_clients', {
 
 // Authorization codes - short-lived codes for OAuth flow
 export const authorizationCodes = sqliteTable('authorization_codes', {
-  code: text('code').primaryKey(),
+  codeHash: text('code').primaryKey(), // SHA-256 hash of the authorization code
   clientId: text('client_id').notNull().references(() => oauthClients.id),
   userId: text('user_id').notNull().references(() => users.id),
   redirectUri: text('redirect_uri').notNull(),

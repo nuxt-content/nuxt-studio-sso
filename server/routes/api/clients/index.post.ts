@@ -33,13 +33,20 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Require HTTPS (allow http://localhost for development)
+  if (!requireHttps(websiteUrl)) {
+    throw createError({
+      statusCode: 400,
+      message: 'Website URL must use HTTPS. Only http://localhost is allowed for development.'
+    })
+  }
+
   // Validate preview URL pattern format (if provided)
   if (previewUrlPattern) {
-    // Basic validation - should be a URL-like pattern with optional wildcards
-    if (!previewUrlPattern.startsWith('https://') && !previewUrlPattern.startsWith('http://')) {
+    if (!requireHttps(previewUrlPattern)) {
       throw createError({
         statusCode: 400,
-        message: 'Preview URL pattern must start with https:// or http://'
+        message: 'Preview URL pattern must use HTTPS. Only http://localhost is allowed for development.'
       })
     }
   }
