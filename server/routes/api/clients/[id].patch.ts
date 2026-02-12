@@ -1,8 +1,8 @@
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default defineEventHandler(async (event) => {
-  const session = await requireAdminUser(event)
+  await requireAdminUser(event)
 
   const clientId = getRouterParam(event, 'id')
   if (!clientId) {
@@ -15,16 +15,11 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { name, websiteUrl, previewUrlPattern, isActive } = body
 
-  // Verify ownership
+  // Verify client exists
   const existingClients = await db
     .select()
     .from(schema.oauthClients)
-    .where(
-      and(
-        eq(schema.oauthClients.id, clientId),
-        eq(schema.oauthClients.ownerId, session.user.id as string)
-      )
-    )
+    .where(eq(schema.oauthClients.id, clientId))
     .limit(1)
 
   if (!existingClients[0]) {

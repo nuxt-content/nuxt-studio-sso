@@ -1,10 +1,9 @@
-import { eq } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default defineEventHandler(async (event) => {
-  const session = await requireAdminUser(event)
+  await requireAdminUser(event)
 
-  // Get all clients owned by the user
+  // Get all clients
   const clients = await db
     .select({
       id: schema.oauthClients.id,
@@ -15,7 +14,6 @@ export default defineEventHandler(async (event) => {
       createdAt: schema.oauthClients.createdAt
     })
     .from(schema.oauthClients)
-    .where(eq(schema.oauthClients.ownerId, session.user.id as string))
 
   return clients.map(client => ({
     ...client,
