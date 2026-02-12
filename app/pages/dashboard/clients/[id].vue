@@ -36,6 +36,7 @@ const editForm = ref({
   isActive: true
 })
 
+const toast = useToast()
 const saving = ref(false)
 const showSecretModal = ref(false)
 const newSecret = ref<string | null>(null)
@@ -67,8 +68,19 @@ async function saveClient() {
     })
 
     await refresh()
+    toast.add({
+      title: 'Client updated',
+      description: 'Your changes have been saved successfully.',
+      color: 'success',
+      icon: 'i-heroicons-check-circle'
+    })
   } catch (error) {
-    console.error('Failed to save client:', error)
+    toast.add({
+      title: 'Failed to save',
+      description: 'Something went wrong while saving the client.',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-circle'
+    })
   } finally {
     saving.value = false
   }
