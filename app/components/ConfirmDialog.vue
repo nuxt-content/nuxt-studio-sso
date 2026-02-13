@@ -3,7 +3,7 @@ interface ConfirmDialogProps {
   title?: string
   description?: string
   confirmLabel?: string
-  confirmColor?: string
+  confirmColor?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'neutral'
   icon?: string
 }
 

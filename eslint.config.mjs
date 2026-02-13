@@ -5,6 +5,7 @@ export default withNuxt({
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/max-attributes-per-line': ['error', { singleline: 3 }],
-    'vue/no-multiple-template-root': 'off'
+    'vue/no-multiple-template-root': 'off',
+    '@typescript-eslint/no-explicit-any': 'off'
   }
 })
