@@ -46,9 +46,9 @@ function base64UrlToArrayBuffer(base64url: string): ArrayBuffer {
 // Convert PEM to ArrayBuffer
 function pemToArrayBuffer(pem: string): ArrayBuffer {
   const base64 = pem
-    .replace(/-----BEGIN.*-----/g, '')
-    .replace(/-----END.*-----/g, '')
-    .replace(/\s/g, '')
+    .replace(/-----BEGIN [^-]+-----/g, '')
+    .replace(/-----END [^-]+-----/g, '')
+    .replace(/[^a-zA-Z0-9+/=]/g, '')
   return base64UrlToArrayBuffer(base64.replace(/\+/g, '-').replace(/\//g, '_'))
 }
 
